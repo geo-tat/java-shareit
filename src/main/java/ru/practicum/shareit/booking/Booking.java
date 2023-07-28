@@ -12,6 +12,6 @@ public class Booking {
     LocalDateTime start;
     LocalDateTime end;
     int itemId;
-    int booker; // userId
+    int booker;
     Status status;
 }

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final UserRepository userRepo;
+
     @Override
     public ItemDto create(Item item, int userId) {
         User user = userRepo.get(userId);
@@ -27,7 +28,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(Item item, int userId, int itemId) {
         User user = userRepo.get(userId);
-        return ItemMapper.toItemDto(repository.update(item,userId,itemId));
+        return ItemMapper.toItemDto(repository.update(item, userId, itemId));
     }
 
     @Override
@@ -50,6 +51,7 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDto> search(String text) {
         return repository.search(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
+
     private void validation(Item item) {
 
     }
