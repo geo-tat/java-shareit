@@ -31,9 +31,7 @@ public class UserRepository {
         return users.values();
     }
 
-    public User update(User user, int id) {
-        if (users.containsKey(id)) {
-            User userToUpdate = users.get(id);
+    public User update(User user,User userToUpdate, int id) {
             if (user.getName() != null) {
                 userToUpdate.setName(user.getName());
             }
@@ -43,8 +41,7 @@ public class UserRepository {
             users.put(id, userToUpdate);
             return userToUpdate;
         }
-        throw new UserNotFoundException("Не существует пользователя с id=" + user.getId());
-    }
+
 
     public boolean delete(int id) {
         if (users.containsKey(id)) {

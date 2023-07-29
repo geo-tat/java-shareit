@@ -51,10 +51,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleNotYourItemException(final NotYourItemException e) {
-        log.error("Вы не являетесь владельцем данного предмета.", e);
-        return new ErrorResponse(
-                e.getMessage()
-        );
+        return new ErrorResponse(e.getMessage());
     }
 }
 

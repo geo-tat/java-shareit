@@ -17,7 +17,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
     @Override
-    public UserDto create(User user) {
+    public UserDto create(UserDto userDto) {
+        User user = UserMapper.toUser(userDto);
         emailValidation(user);
         return UserMapper.toUserDto(repository.create(user));
     }
@@ -36,9 +37,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(User user, int id) {
+    public UserDto update(UserDto userDto, int id) {
+        User user = UserMapper.toUser(userDto);
         emailValidationForUpdate(user, id);
-        return UserMapper.toUserDto(repository.update(user, id));
+        User userToUpdate = repository.get(id);
+        return UserMapper.toUserDto(repository.update(user, userToUpdate, id));
     }
 
     @Override
@@ -57,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     private void emailValidationForUpdate(User user, int id) {
         if (repository.getUsers().stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(user.getEmail()) && u.getId() != id)) {
+                .anyMatch(u -> u.getId() != id && u.getEmail().equalsIgnoreCase(user.getEmail()))) {
             throw new InvalidEmailException("Почтовый адрес занят!");
         }
     }
