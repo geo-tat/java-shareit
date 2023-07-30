@@ -51,6 +51,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleNotYourItemException(final NotYourItemException e) {
+        log.error("Пользователь запросил доступ к чужому предмету.", e);
         return new ErrorResponse(e.getMessage());
     }
 }

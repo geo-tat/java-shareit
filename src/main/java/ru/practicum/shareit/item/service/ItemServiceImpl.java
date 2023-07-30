@@ -36,7 +36,16 @@ public class ItemServiceImpl implements ItemService {
         if (itemToUpdate.getOwner().getId() != user.getId()) {
             throw new NotYourItemException("Вы не являетесь владельцем данного предмета.");
         }
-        return ItemMapper.toItemDto(repository.update(item, itemId, itemToUpdate));
+        if (item.getName() != null) {
+            itemToUpdate.setName(item.getName());
+        }
+        if (item.getDescription() != null) {
+            itemToUpdate.setDescription(item.getDescription());
+        }
+        if (item.getAvailable() != null) {
+            itemToUpdate.setAvailable(item.getAvailable());
+        }
+        return ItemMapper.toItemDto(repository.update(itemId, itemToUpdate));
     }
 
     @Override

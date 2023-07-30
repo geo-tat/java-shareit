@@ -41,7 +41,13 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toUser(userDto);
         emailValidationForUpdate(user, id);
         User userToUpdate = repository.get(id);
-        return UserMapper.toUserDto(repository.update(user, userToUpdate, id));
+        if (user.getName() != null) {
+            userToUpdate.setName(user.getName());
+        }
+        if (user.getEmail() != null) {
+            userToUpdate.setEmail(user.getEmail());
+        }
+        return UserMapper.toUserDto(repository.update(userToUpdate, id));
     }
 
     @Override

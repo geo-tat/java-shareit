@@ -31,16 +31,10 @@ public class UserRepository {
         return users.values();
     }
 
-    public User update(User user,User userToUpdate, int id) {
-            if (user.getName() != null) {
-                userToUpdate.setName(user.getName());
-            }
-            if (user.getEmail() != null) {
-                userToUpdate.setEmail(user.getEmail());
-            }
-            users.put(id, userToUpdate);
-            return userToUpdate;
-        }
+    public User update(User userToUpdate, int id) {
+        users.put(id, userToUpdate);
+        return userToUpdate;
+    }
 
 
     public boolean delete(int id) {

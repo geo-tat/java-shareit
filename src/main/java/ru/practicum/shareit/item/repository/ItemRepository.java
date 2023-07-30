@@ -21,16 +21,7 @@ public class ItemRepository {
         return item;
     }
 
-    public Item update(Item item, int itemId, Item itemToUpdate) {
-        if (item.getName() != null) {
-            itemToUpdate.setName(item.getName());
-        }
-        if (item.getDescription() != null) {
-            itemToUpdate.setDescription(item.getDescription());
-        }
-        if (item.getAvailable() != null) {
-            itemToUpdate.setAvailable(item.getAvailable());
-        }
+    public Item update(int itemId, Item itemToUpdate) {
         items.put(itemId, itemToUpdate);
         return itemToUpdate;
     }
