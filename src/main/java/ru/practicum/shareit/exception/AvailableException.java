@@ -3,11 +3,10 @@ package ru.practicum.shareit.exception;
 import lombok.Getter;
 
 @Getter
-public class UserNotFoundException extends RuntimeException {
+public class AvailableException extends RuntimeException {
     String message;
 
-    public UserNotFoundException(String message) {
+    public AvailableException(String message) {
         this.message = message;
     }
-
 }

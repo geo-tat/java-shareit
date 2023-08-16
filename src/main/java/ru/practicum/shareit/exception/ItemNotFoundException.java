@@ -1,5 +1,8 @@
 package ru.practicum.shareit.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ItemNotFoundException extends RuntimeException {
     String message;
 
@@ -7,7 +10,4 @@ public class ItemNotFoundException extends RuntimeException {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }

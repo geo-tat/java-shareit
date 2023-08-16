@@ -1,5 +1,8 @@
 package ru.practicum.shareit.exception;
 
+import lombok.Getter;
+
+@Getter
 public class InvalidEmailException extends RuntimeException {
     String message;
 
@@ -7,7 +10,4 @@ public class InvalidEmailException extends RuntimeException {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }

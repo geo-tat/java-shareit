@@ -1,17 +1,16 @@
 package ru.practicum.shareit.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ErrorResponse {
-    private String message;
+    private String error;
 
-    public ErrorResponse(String message) {
-        this.message = message;
+    public ErrorResponse(String error) {
+        this.error = error;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setError(String error) {
+        this.error = error;
     }
 }

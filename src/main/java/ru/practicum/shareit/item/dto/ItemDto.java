@@ -3,9 +3,11 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.shareit.booking.dto.BookingLightDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
@@ -17,5 +19,7 @@ public class ItemDto {
     String description;
     @NotNull
     Boolean available;
-    Integer requestId;
+    BookingLightDto lastBooking;
+    BookingLightDto nextBooking;
+    List<CommentDto> comments;
 }
