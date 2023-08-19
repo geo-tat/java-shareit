@@ -39,10 +39,13 @@ public class BookingServiceImpl implements BookingService {
                 .stream()
                 .findAny()
                 .orElseThrow(() -> new ItemNotFoundException("Предмет c ID=" + booking.getItemId() + " не найден."));
-        if (!item.getAvailable()) {
+        Collection<Booking> alreadyBooked = repository.findAllByItemIdAndStartAfterAndEndBefore(item.getId(),
+                bookingToSave.getStart(),
+                bookingToSave.getEnd());
+        if (!item.getAvailable() || !alreadyBooked.isEmpty()) {
             throw new AvailableException("Предмет недоступен для аренды");
         }
-        if (booking.getStart().isAfter(booking.getEnd()) || booking.getStart().equals(booking.getEnd())) {
+        if (!booking.getStart().isBefore(booking.getEnd())) {
             throw new WrongTimeException("Время течет в другую сторону.");
         }
         if (item.getOwner().getId() == userId) {
@@ -63,11 +66,11 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = repository.findById(bookingId).stream()
                 .findAny()
                 .orElseThrow(() -> new BookingNotFoundException("Заказ с Id=" + bookingId + " не найден."));
-        if (!booking.getItem().getOwner().equals(user)) {
+        if (booking.getItem().getOwner().getId() != userId) {
             throw new NotYourItemException("Пользователь запросил доступ к чужому предмету.");
         }
         if (isApproved) {
-            if (booking.getStatus().equals(Status.APPROVED)) {
+            if (booking.getStatus() != Status.WAITING) {
                 throw new WrongStateException("Статус уже установлен");
             }
             booking.setStatus(Status.APPROVED);

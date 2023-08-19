@@ -3,6 +3,9 @@ package ru.practicum.shareit.item.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingLightDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.AvailableException;
@@ -21,9 +24,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,18 +78,47 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+
+        Collection<Integer> itemIds = result.stream()
+                .map(ItemDto::getId)
+                .collect(Collectors.toList());
+
+        Map<Integer, BookingLightDto> lastBookingsMap = bookingRepo.findLastBookingsForItems(itemIds,
+                        LocalDateTime.now(),
+                        Status.APPROVED)
+                .stream()
+                .collect(Collectors.toMap(
+                        booking -> booking.getItem().getId(),
+                        BookingMapper::toBookingLightDto
+                ));
+        Map<Integer, BookingLightDto> nextBookingsMap = bookingRepo.findNextBookingsForItems(itemIds,
+                        LocalDateTime.now(),
+                        Status.APPROVED)
+                .stream()
+                .collect(Collectors.toMap(
+                        booking -> booking.getItem().getId(),
+                        BookingMapper::toBookingLightDto, (existing, replacement) -> existing
+                ));
+        Map<ItemDto, List<CommentDto>> allComments = commentRepo.findAllForItems(itemIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        comment -> ItemMapper.toItemDto(comment.getItem()),
+                        Collectors.mapping(CommentMapper::toCommentDto, Collectors.toList())
+                ));
         for (ItemDto itemDto : result) {
-            itemDto.setLastBooking(bookingRepo.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(itemDto.getId(), LocalDateTime.now(), Status.APPROVED));
-            itemDto.setNextBooking(bookingRepo.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemDto.getId(), LocalDateTime.now(), Status.APPROVED));
+            itemDto.setLastBooking(lastBookingsMap.get(itemDto.getId()));
+            itemDto.setNextBooking(nextBookingsMap.get(itemDto.getId()));
             itemDto.setComments(commentRepo.findAllByItemId(itemDto.getId())
                     .stream()
                     .map(CommentMapper::toCommentDto)
                     .collect(Collectors.toList()));
         }
+
         return result.stream()
                 .sorted(Comparator.comparingInt(ItemDto::getId))
                 .collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -99,8 +129,28 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ItemNotFoundException("Предмет c ID=" + id + " не найден"));
         ItemDto result = ItemMapper.toItemDto(item);
         if (item.getOwner().getId() == userId) {
-            result.setLastBooking(bookingRepo.findFirstByItemAndStartBeforeAndStatusOrderByEndDesc(item, LocalDateTime.now(), Status.APPROVED));
-            result.setNextBooking(bookingRepo.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item, LocalDateTime.now(), Status.APPROVED));
+            //     result.setLastBooking(BookingMapper
+            //             .toBookingLightDto(bookingRepo.findFirstByItemAndStartBeforeAndStatusOrderByEndDesc(item,
+            //                     LocalDateTime.now(),
+            //                     Status.APPROVED)));
+            Booking last = bookingRepo.findFirstByItemAndStartBeforeAndStatusOrderByEndDesc(item,
+                    LocalDateTime.now(),
+                    Status.APPROVED);
+            if (last != null) {
+                BookingLightDto last2 = BookingMapper.toBookingLightDto(last);
+                result.setLastBooking(last2);
+            }
+            //    result.setNextBooking(BookingMapper
+            //            .toBookingLightDto(bookingRepo.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item,
+            //                    LocalDateTime.now(),
+            //                     Status.APPROVED)));
+            Booking next = bookingRepo.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item,
+                    LocalDateTime.now(),
+                    Status.APPROVED);
+            if (next != null) {
+                BookingLightDto next2 = BookingMapper.toBookingLightDto(next);
+                result.setNextBooking(next2);
+            }
         }
         result.setComments(commentRepo.findAllByItemId(result.getId())
                 .stream()
@@ -140,7 +190,6 @@ public class ItemServiceImpl implements ItemService {
         }
         comment.setItem(item);
         comment.setAuthor(user);
-        comment.setCreated(LocalDateTime.now());
         commentRepo.save(comment);
         return CommentMapper.toCommentDto(comment);
     }

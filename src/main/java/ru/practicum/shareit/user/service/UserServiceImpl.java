@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.InvalidEmailException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -45,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto update(UserDto userDto, int id) {
         User user = UserMapper.toUser(userDto);
-        emailValidationForUpdate(user, id);
+        //  emailValidationForUpdate(user, id);
         User userToUpdate = repository.findById(id).stream()
                 .findFirst().orElseThrow(() -> new UserNotFoundException("Пользователь c ID=" + id + " не найден"));
         if (user.getName() != null) {
@@ -63,13 +62,4 @@ public class UserServiceImpl implements UserService {
         repository.deleteById(id);
 
     }
-
-    @Transactional(readOnly = true)
-    private void emailValidationForUpdate(User user, int id) {
-        if (repository.findAll().stream()
-                .anyMatch(u -> u.getId() != id && u.getEmail().equalsIgnoreCase(user.getEmail()))) {
-            throw new InvalidEmailException("Почтовый адрес занят!");
-        }
-    }
-
 }

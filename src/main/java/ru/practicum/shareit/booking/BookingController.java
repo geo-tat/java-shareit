@@ -14,7 +14,6 @@ import java.util.Collection;
 @RestController
 @RequestMapping(path = "/bookings")
 @AllArgsConstructor
-
 public class BookingController {
     private final BookingService service;
 

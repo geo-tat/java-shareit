@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    int id;
     @NotBlank
     private String text;
     @ManyToOne
@@ -28,7 +29,8 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
-
+    @CreationTimestamp
+    @Column(name = "created", nullable = false, updatable = false)
     private LocalDateTime created;
 
 }

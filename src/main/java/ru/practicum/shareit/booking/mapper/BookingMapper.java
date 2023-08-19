@@ -33,27 +33,14 @@ public class BookingMapper {
                 .end(bookingLightDto.getEnd())
                 .build();
     }
-}
-
-/*
-
-    public static Booking toBooking(BookingDto bookingDto) {
-        return Booking.builder()
-                .id(bookingDto.getId())
-                .start(bookingDto.getStart())
-                .end(bookingDto.getEnd())
-                .status(bookingDto.getStatus())
-                .build();
-
-    }
 
     public static BookingLightDto toBookingLightDto(Booking booking) {
         return BookingLightDto.builder()
-                .id(booking.getId())
+                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
                 .itemId(booking.getItem().getId())
                 .bookerId(booking.getBooker().getId())
                 .build();
     }
- */
+}
