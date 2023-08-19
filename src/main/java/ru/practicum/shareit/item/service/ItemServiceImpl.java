@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingLightDto;
@@ -34,6 +35,8 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepo;
     private final BookingRepository bookingRepo;
     private final CommentRepository commentRepo;
+    private final Sort sortStart = Sort.by(Sort.Direction.ASC, "start");
+    private final Sort sortEnd = Sort.by(Sort.Direction.DESC, "end");
 
     @Override
     @Transactional
@@ -99,19 +102,16 @@ public class ItemServiceImpl implements ItemService {
                         booking -> booking.getItem().getId(),
                         BookingMapper::toBookingLightDto, (existing, replacement) -> existing
                 ));
-        Map<ItemDto, List<CommentDto>> allComments = commentRepo.findAllForItems(itemIds)
+        Map<Integer, List<CommentDto>> allComments = commentRepo.findAllForItems(itemIds)
                 .stream()
                 .collect(Collectors.groupingBy(
-                        comment -> ItemMapper.toItemDto(comment.getItem()),
+                        comment -> comment.getItem().getId(),
                         Collectors.mapping(CommentMapper::toCommentDto, Collectors.toList())
                 ));
         for (ItemDto itemDto : result) {
             itemDto.setLastBooking(lastBookingsMap.get(itemDto.getId()));
             itemDto.setNextBooking(nextBookingsMap.get(itemDto.getId()));
-            itemDto.setComments(commentRepo.findAllByItemId(itemDto.getId())
-                    .stream()
-                    .map(CommentMapper::toCommentDto)
-                    .collect(Collectors.toList()));
+            itemDto.setComments(allComments.get(itemDto.getId()));
         }
 
         return result.stream()
@@ -129,24 +129,18 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ItemNotFoundException("Предмет c ID=" + id + " не найден"));
         ItemDto result = ItemMapper.toItemDto(item);
         if (item.getOwner().getId() == userId) {
-            //     result.setLastBooking(BookingMapper
-            //             .toBookingLightDto(bookingRepo.findFirstByItemAndStartBeforeAndStatusOrderByEndDesc(item,
-            //                     LocalDateTime.now(),
-            //                     Status.APPROVED)));
-            Booking last = bookingRepo.findFirstByItemAndStartBeforeAndStatusOrderByEndDesc(item,
+            Booking last = bookingRepo.findFirstByItemAndStartBeforeAndStatus(item,
                     LocalDateTime.now(),
-                    Status.APPROVED);
+                    Status.APPROVED,
+                    sortEnd);
             if (last != null) {
                 BookingLightDto last2 = BookingMapper.toBookingLightDto(last);
                 result.setLastBooking(last2);
             }
-            //    result.setNextBooking(BookingMapper
-            //            .toBookingLightDto(bookingRepo.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item,
-            //                    LocalDateTime.now(),
-            //                     Status.APPROVED)));
-            Booking next = bookingRepo.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item,
+            Booking next = bookingRepo.findFirstByItemAndStartAfterAndStatus(item,
                     LocalDateTime.now(),
-                    Status.APPROVED);
+                    Status.APPROVED,
+                    sortStart);
             if (next != null) {
                 BookingLightDto next2 = BookingMapper.toBookingLightDto(next);
                 result.setNextBooking(next2);

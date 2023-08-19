@@ -49,10 +49,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                                                                                 Status status,
                                                                                 LocalDateTime now);
 
-    Booking findFirstByItemAndStartAfterAndStatusOrderByStartAsc(Item item, LocalDateTime now, Status status);
-
-    Booking findFirstByItemAndStartBeforeAndStatusOrderByEndDesc(Item item, LocalDateTime now, Status status);
-
     Collection<Booking> findAllByItemIdAndStartAfterAndEndBefore(int id, LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT b FROM Booking b " +
@@ -70,4 +66,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Collection<Booking> findLastBookingsForItems(@Param("itemIds") Collection<Integer> itemIds,
                                                  @Param("now") LocalDateTime now,
                                                  @Param("status") Status status);
+
+    Booking findFirstByItemAndStartBeforeAndStatus(Item item, LocalDateTime now, Status status, Sort sortEnd);
+
+    Booking findFirstByItemAndStartAfterAndStatus(Item item, LocalDateTime now, Status status, Sort sortStart);
 }
