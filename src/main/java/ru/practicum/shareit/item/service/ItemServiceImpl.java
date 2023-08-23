@@ -24,6 +24,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -100,7 +101,9 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .collect(Collectors.toMap(
                         booking -> booking.getItem().getId(),
-                        BookingMapper::toBookingLightDto, (existing, replacement) -> existing
+                        BookingMapper::toBookingLightDto, (existing, replacement) -> {
+                            return existing.getStart().isBefore(replacement.getStart()) ? existing : replacement;
+                        }
                 ));
         Map<Integer, List<CommentDto>> allComments = commentRepo.findAllForItems(itemIds)
                 .stream()
