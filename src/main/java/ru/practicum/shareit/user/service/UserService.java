@@ -13,7 +13,7 @@ public interface UserService {
 
     UserDto update(UserDto user, int id);
 
-    boolean delete(int id);
+   void delete(int id);
 
 
 }
