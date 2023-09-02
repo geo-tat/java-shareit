@@ -2,16 +2,17 @@ package ru.practicum.shareit.request.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.shareit.item.dto.ItemForRequestDto;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
-public class ItemRequestDto {
+
+public class ItemRequestFullDto {
     private int id;
-    @NotBlank(message = "Не заполнено поле - description.")
     private String description;
     private LocalDateTime created;
-
+    private List<ItemForRequestDto> items;
 }

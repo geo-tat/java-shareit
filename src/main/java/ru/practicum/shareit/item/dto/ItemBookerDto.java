@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class ItemBookerDto {
-    int id;
+    Integer id;
     String name;
 }
