@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.exception.RequestNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -109,7 +110,7 @@ class ItemRequestServiceImplTest {
                 .request(itemRequest)
                 .build();
 
-          itemRequestDto = RequestMapper.toDto(itemRequest);
+        itemRequestDto = RequestMapper.toDto(itemRequest);
 
 
     }
@@ -156,13 +157,13 @@ class ItemRequestServiceImplTest {
         when(itemRepository.existsById(anyInt())).thenReturn(true);
         when(itemRepository.findAllItemsForRequestIds(any(Collection.class))).thenReturn(List.of(item3));
 
-        ItemRequestFullDto test = new ArrayList<>(itemRequestService.getAllRequests(user.getId(),pageRequest)).get(0);
+        ItemRequestFullDto test = new ArrayList<>(itemRequestService.getAllRequests(user.getId(), pageRequest)).get(0);
         assertEquals(test.getItems().get(0).getId(), item3.getId());
         assertEquals(test.getItems().get(0).getName(), item3.getName());
         assertEquals(test.getItems().get(0).getDescription(), item3.getDescription());
         assertEquals(test.getItems().get(0).getAvailable(), item3.getAvailable());
 
-        verify(itemRequestRepository, times(1)).findAllByRequesterNot(any(User.class),any(PageRequest.class));
+        verify(itemRequestRepository, times(1)).findAllByRequesterNot(any(User.class), any(PageRequest.class));
     }
 
 
@@ -182,6 +183,19 @@ class ItemRequestServiceImplTest {
         assertEquals(test.getItems().get(0).getRequestId(), user.getId());
 
         verify(itemRequestRepository, times(1)).findById(anyInt());
+    }
+
+    @Test
+    void getByIdRequestNotFound() {
+        when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(itemRepository.findAllByRequestId(anyInt())).thenReturn(List.of(item3));
+        when(itemRequestRepository.existsById(anyInt())).thenReturn(true);
+        when(itemRequestRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(RequestNotFoundException.class, () -> itemRequestService.getById(5, 1));
+
+        verify(itemRequestRepository, times(1)).findById(5);
     }
 
 }

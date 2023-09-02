@@ -34,15 +34,6 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleInvalidEmailException(final InvalidEmailException e) {
-        log.error("Почтовый адрес занят!", e);
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public List<String> handleValidationException(MethodArgumentNotValidException ex) {

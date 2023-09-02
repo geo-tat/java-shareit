@@ -135,7 +135,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void addBooking() {
+    void createBookingTest() {
         when(itemRepository.existsById(anyInt())).thenReturn(true);
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
         when(userRepository.existsById(anyInt())).thenReturn(true);
@@ -152,7 +152,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void addBookingOwnItem() {
+    void createBookingOwnItem() {
         when(itemRepository.existsById(anyInt())).thenReturn(true);
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
         when(userRepository.existsById(anyInt())).thenReturn(true);
@@ -162,7 +162,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void addBookingItemBooked() {
+    void createBookingItemBooked() {
 
         item.setAvailable(false);
 
@@ -175,7 +175,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void addBookingNotValidEnd() {
+    void createBookingNotValidEnd() {
         when(itemRepository.existsById(anyInt())).thenReturn(true);
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
         when(userRepository.existsById(anyInt())).thenReturn(true);
@@ -188,7 +188,7 @@ public class BookingServiceTest {
 
 
     @Test
-    void approveBooking() {
+    void updateBookingTest() {
         BookingDto test;
 
         when(bookingRepository.existsById(anyInt())).thenReturn(true);
@@ -206,7 +206,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void approveBookingWrongUser() {
+    void updateBookingWrongUser() {
         when(bookingRepository.existsById(anyInt())).thenReturn(true);
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking2));
         when(bookingRepository.save(any(Booking.class))).thenReturn(booking2);
@@ -216,7 +216,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void approveBookingWrongStatus() {
+    void updateBookingWrongStatus() {
         when(bookingRepository.existsById(anyInt())).thenReturn(true);
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking2));
         when(bookingRepository.save(any(Booking.class))).thenReturn(booking2);
@@ -225,7 +225,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void getBookingById() {
+    void getById() {
         when(bookingRepository.existsById(anyInt())).thenReturn(true);
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking1));
         when(userRepository.existsById(anyInt())).thenReturn(true);
@@ -240,7 +240,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void getBookingByIdError() {
+    void getByIdError() {
         when(bookingRepository.existsById(anyInt())).thenReturn(true);
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking1));
         when(userRepository.existsById(anyInt())).thenReturn(true);
@@ -249,9 +249,16 @@ public class BookingServiceTest {
         assertThrows(NotFoundException.class, () -> bookingService.getById(2, user2.getId()));
     }
 
+    @Test
+    void getByIdNotFound() {
+        when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user2));
+        assertThrows(BookingNotFoundException.class, () -> bookingService.getById(4,user2.getId()));
+    }
+
 
     @Test
-    void getAllByBookerTest() {
+    void getAllByUserTest() {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user3));
 

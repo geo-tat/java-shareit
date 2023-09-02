@@ -194,4 +194,14 @@ class ItemControllerTest {
 
         verify(itemService, times(1)).addComment(1, 1, commentDto);
     }
+
+    @Test
+    void deleteItem() throws Exception {
+
+        mvc.perform(delete("/items/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(itemService).delete(1);
+    }
 }

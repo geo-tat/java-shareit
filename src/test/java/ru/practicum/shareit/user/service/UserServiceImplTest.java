@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -22,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -102,6 +102,11 @@ class UserServiceImplTest {
         assertEquals(userDtoTest.getEmail(), userDto1.getEmail());
 
         verify(userRepository, times(1)).findById(1);
+    }
+
+    @Test
+    void getByIdUserNotFound() {
+        assertThrows(UserNotFoundException.class, () -> userService.get(5));
     }
 
     @Test

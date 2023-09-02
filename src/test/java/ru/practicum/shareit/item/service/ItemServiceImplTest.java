@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.AvailableException;
 import ru.practicum.shareit.exception.NotYourItemException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -126,7 +127,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void addItem() {
+    void createItemTest() {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(itemRequestRepository.findById(anyInt())).thenReturn(Optional.ofNullable(itemRequest));
@@ -141,7 +142,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void updateItem() {
+    void updateItemTest() {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(itemRepository.existsById(anyInt())).thenReturn(true);
@@ -167,6 +168,12 @@ public class ItemServiceImplTest {
         when(itemRepository.findAllItemsByOwnerId(anyInt(), any(PageRequest.class))).thenReturn(Collections.emptyList());
 
         assertThrows(NotYourItemException.class, () -> itemService.update(itemDto2, user.getId(), item2.getId()));
+    }
+
+    @Test
+    void deleteItem() {
+        itemService.delete(1);
+        verify(itemRepository, times(1)).deleteById(1);
     }
 
     @Test
@@ -247,4 +254,17 @@ public class ItemServiceImplTest {
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
+    @Test
+    void addCommentNotAvailable() {
+
+        when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(itemRepository.existsById(anyInt())).thenReturn(true);
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
+        when(bookingRepository.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(
+                anyInt(), anyInt(), any(Status.class), any(LocalDateTime.class)
+        )).thenReturn(Collections.emptyList());
+
+        assertThrows(AvailableException.class, () -> itemService.addComment(user.getId(), item.getId(), commentDto));
+    }
 }

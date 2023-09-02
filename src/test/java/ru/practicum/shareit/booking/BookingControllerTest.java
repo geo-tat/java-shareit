@@ -116,7 +116,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void addBooking() throws Exception {
+    void createBookingTest() throws Exception {
         when(bookingService.add(any(BookingLightDto.class), anyInt())).thenReturn(bookingDto);
         mvc.perform(post("/bookings")
                         .content(mapper.writeValueAsString(bookingLight1))
@@ -134,7 +134,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void approveBooking() throws Exception {
+    void updateBookingTest() throws Exception {
         when(bookingService.updateRequest(anyBoolean(), anyInt(), anyInt())).thenReturn(bookingDto);
 
         mvc.perform(patch("/bookings/{bookingId}", 1)
@@ -153,7 +153,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void getBookingById() throws Exception {
+    void getByIdTest() throws Exception {
         when(bookingService.getById(anyInt(), anyInt())).thenReturn(bookingDto);
 
         mvc.perform(get("/bookings/{bookingId}", 1)
@@ -171,7 +171,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void getAllBookingsByBookerId() throws Exception {
+    void getAllByUserTest() throws Exception {
         when(bookingService.getAllByUser(anyInt(), anyString(), any(PageRequest.class))).thenAnswer(invocation -> {
             List<Booking> bookings = new ArrayList<>();
             bookings.add(booking1);
@@ -190,7 +190,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void getAllBookingsForAllItemsByOwnerId() throws Exception {
+    void getAllByOwnerTest() throws Exception {
         when(bookingService.getAllByOwner(anyInt(), anyString(), any(PageRequest.class))).thenAnswer(invocation -> {
             List<Booking> bookings = new ArrayList<>();
             bookings.add(booking1);
