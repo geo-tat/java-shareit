@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.data.domain.PageRequest;
 
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -55,6 +56,7 @@ public class ItemServiceImplTest {
 
 
     private User user;
+    private User user2;
     private Item item;
     private Item item2;
     private ItemDto itemDto;
@@ -74,7 +76,7 @@ public class ItemServiceImplTest {
                 .email("ford@test.com")
                 .build();
 
-        User user2 = User.builder()
+         user2 = User.builder()
                 .id(2)
                 .name("Tom")
                 .email("cruise@test.com")
@@ -178,9 +180,32 @@ public class ItemServiceImplTest {
 
     @Test
     void getItemById() {
+        Booking lastBooking = Booking.builder()
+                .id(2)
+                .start(LocalDateTime.now().minusHours(2))
+                .end(LocalDateTime.now().minusHours(1))
+                .status(Status.APPROVED)
+                .item(item)
+                .booker(user2)
+                .build();
+
+        Booking nextBooking = Booking.builder()
+                .id(3)
+                .start(LocalDateTime.now().plusHours(1))
+                .end(LocalDateTime.now().plusHours(2))
+                .status(Status.APPROVED)
+                .booker(user2)
+                .item(item)
+                .build();
         when(itemRepository.existsById(anyInt())).thenReturn(true);
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
         when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(bookingRepository.findFirstByItemAndStartBeforeAndStatus(
+                eq(item), any(LocalDateTime.class), eq(Status.APPROVED), any(Sort.class)))
+                .thenReturn(lastBooking);
+        when(bookingRepository.findFirstByItemAndStartAfterAndStatus(
+                eq(item), any(LocalDateTime.class), eq(Status.APPROVED), any(Sort.class)))
+                .thenReturn(nextBooking);
         when(commentRepository.findAllByItemId(anyInt())).thenReturn(List.of(comment));
 
         ItemDto itemDtoTest = itemService.get(item.getId(), user.getId());

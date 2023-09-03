@@ -145,7 +145,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void getAllItemsUser() throws Exception {
+    void getItems() throws Exception {
 
         when(itemService.getItems(anyInt(), any(PageRequest.class))).thenReturn(List.of(itemDto, itemDto2));
 
@@ -160,6 +160,20 @@ class ItemControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(List.of(itemDto, itemDto2))));
 
         verify(itemService, times(1)).getItems(1, pageRequest);
+    }
+
+
+    @Test
+    void getItemsInvalidParameter() throws Exception {
+        mvc.perform(get("/items")
+                        .param("from", "-1")
+                        .param("size", "5")
+                        .header("X-Sharer-User-Id", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Ошибка параметра 'from'!"));
     }
 
     @Test
