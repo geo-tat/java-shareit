@@ -152,6 +152,21 @@ public class BookingServiceTest {
     }
 
     @Test
+    void createBookingUserNotFound() {
+        assertThrows(UserNotFoundException.class, () -> bookingService.add(bookingLight1, 44));
+    }
+
+    @Test
+    void createBookingItemNotFound() {
+        bookingLight1.setItemId(55);
+        when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+
+        assertThrows(ItemNotFoundException.class, () -> bookingService.add(bookingLight1, 1));
+
+    }
+
+    @Test
     void createBookingOwnItem() {
         when(itemRepository.existsById(anyInt())).thenReturn(true);
         when(itemRepository.findById(anyInt())).thenReturn(Optional.of(item));
@@ -216,6 +231,18 @@ public class BookingServiceTest {
     }
 
     @Test
+    void updateBookingUserNotFound() {
+        assertThrows(UserNotFoundException.class, () -> bookingService.updateRequest(true, booking2.getId(), 44));
+    }
+
+    @Test
+    void updateBookingWhenBookingNotFound() {
+        when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user2));
+        assertThrows(BookingNotFoundException.class, () -> bookingService.updateRequest(true, 55, 1));
+    }
+
+    @Test
     void updateBookingWrongStatus() {
         when(bookingRepository.existsById(anyInt())).thenReturn(true);
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking2));
@@ -253,7 +280,7 @@ public class BookingServiceTest {
     void getByIdNotFound() {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user2));
-        assertThrows(BookingNotFoundException.class, () -> bookingService.getById(4,user2.getId()));
+        assertThrows(BookingNotFoundException.class, () -> bookingService.getById(4, user2.getId()));
     }
 
 

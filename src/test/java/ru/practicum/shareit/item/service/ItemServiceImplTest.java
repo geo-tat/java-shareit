@@ -78,7 +78,7 @@ public class ItemServiceImplTest {
                 .email("ford@test.com")
                 .build();
 
-         user2 = User.builder()
+        user2 = User.builder()
                 .id(2)
                 .name("Tom")
                 .email("cruise@test.com")
@@ -147,7 +147,7 @@ public class ItemServiceImplTest {
 
     @Test
     void createItemUserNotFound() {
-        assertThrows(UserNotFoundException.class, () -> itemService.create(itemDto,14));
+        assertThrows(UserNotFoundException.class, () -> itemService.create(itemDto, 14));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class ItemServiceImplTest {
 
     @Test
     void updateItemUserNotFound() {
-        assertThrows(UserNotFoundException.class, () -> itemService.update(itemDto,14,1));
+        assertThrows(UserNotFoundException.class, () -> itemService.update(itemDto, 14, 1));
 
     }
 
@@ -178,7 +178,7 @@ public class ItemServiceImplTest {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
 
-        assertThrows(ItemNotFoundException.class, () -> itemService.update(itemDto,1,16));
+        assertThrows(ItemNotFoundException.class, () -> itemService.update(itemDto, 1, 16));
 
     }
 
@@ -242,15 +242,33 @@ public class ItemServiceImplTest {
 
     @Test
     void getByIdWhenItemNotFound() {
-        assertThrows(ItemNotFoundException.class, () -> itemService.get(43,1));
+        assertThrows(ItemNotFoundException.class, () -> itemService.get(43, 1));
     }
 
     @Test
     void getItems() {
+        Booking lastBooking = Booking.builder()
+                .id(2)
+                .start(LocalDateTime.now().minusHours(2))
+                .end(LocalDateTime.now().minusHours(1))
+                .status(Status.APPROVED)
+                .item(item)
+                .booker(user2)
+                .build();
+
+        Booking nextBooking = Booking.builder()
+                .id(3)
+                .start(LocalDateTime.now().plusHours(1))
+                .end(LocalDateTime.now().plusHours(2))
+                .status(Status.APPROVED)
+                .booker(user2)
+                .item(item)
+                .build();
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(itemRepository.findAllItemsByOwnerId(anyInt(), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(item)));
         when(commentRepository.findAllByItemId(anyInt())).thenReturn(List.of(comment));
-
+        when(bookingRepository.findLastBookingsForItems(eq(List.of(1)), any(LocalDateTime.class), eq(Status.APPROVED))).thenReturn(List.of(lastBooking));
+        when(bookingRepository.findNextBookingsForItems(eq(List.of(1)), any(LocalDateTime.class), eq(Status.APPROVED))).thenReturn(List.of(nextBooking));
         ItemDto itemDtoTest = new ArrayList<>(itemService.getItems(user.getId(), pageRequest)).get(0);
 
         assertEquals(itemDtoTest.getId(), item.getId());
@@ -322,7 +340,7 @@ public class ItemServiceImplTest {
 
     @Test
     void addCommentWhenUserNotFound() {
-        assertThrows(UserNotFoundException.class, () -> itemService.addComment(45,1,commentDto));
+        assertThrows(UserNotFoundException.class, () -> itemService.addComment(45, 1, commentDto));
     }
 
     @Test
@@ -330,7 +348,7 @@ public class ItemServiceImplTest {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
 
-        assertThrows(ItemNotFoundException.class, () -> itemService.addComment(1,14,commentDto));
+        assertThrows(ItemNotFoundException.class, () -> itemService.addComment(1, 14, commentDto));
 
     }
 }
