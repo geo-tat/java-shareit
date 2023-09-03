@@ -13,7 +13,9 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.AvailableException;
+import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.NotYourItemException;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
@@ -135,12 +137,17 @@ public class ItemServiceImplTest {
         when(itemRequestRepository.findById(anyInt())).thenReturn(Optional.ofNullable(itemRequest));
         when(itemRepository.save(any(Item.class))).thenReturn(item);
 
-        ItemDto itemDtoTest = itemService.create(itemDto, user.getId());
+        ItemDto test = itemService.create(itemDto, user.getId());
 
-        assertEquals(itemDtoTest.getId(), itemDto.getId());
-        assertEquals(itemDtoTest.getDescription(), itemDto.getDescription());
+        assertEquals(test.getId(), itemDto.getId());
+        assertEquals(test.getDescription(), itemDto.getDescription());
 
         verify(itemRepository, times(1)).save(any(Item.class));
+    }
+
+    @Test
+    void createItemUserNotFound() {
+        assertThrows(UserNotFoundException.class, () -> itemService.create(itemDto,14));
     }
 
     @Test
@@ -158,6 +165,21 @@ public class ItemServiceImplTest {
         assertEquals(itemDtoTest.getDescription(), itemDto.getDescription());
 
         verify(itemRepository, times(1)).save(any(Item.class));
+    }
+
+    @Test
+    void updateItemUserNotFound() {
+        assertThrows(UserNotFoundException.class, () -> itemService.update(itemDto,14,1));
+
+    }
+
+    @Test
+    void updateItemWhenItemNotFound() {
+        when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+
+        assertThrows(ItemNotFoundException.class, () -> itemService.update(itemDto,1,16));
+
     }
 
     @Test
@@ -216,6 +238,11 @@ public class ItemServiceImplTest {
         assertEquals(itemDtoTest.getRequestId(), item.getRequest().getId());
 
         verify(itemRepository, times(1)).findById(anyInt());
+    }
+
+    @Test
+    void getByIdWhenItemNotFound() {
+        assertThrows(ItemNotFoundException.class, () -> itemService.get(43,1));
     }
 
     @Test
@@ -291,5 +318,19 @@ public class ItemServiceImplTest {
         )).thenReturn(Collections.emptyList());
 
         assertThrows(AvailableException.class, () -> itemService.addComment(user.getId(), item.getId(), commentDto));
+    }
+
+    @Test
+    void addCommentWhenUserNotFound() {
+        assertThrows(UserNotFoundException.class, () -> itemService.addComment(45,1,commentDto));
+    }
+
+    @Test
+    void addCommentWhenItemNotFound() {
+        when(userRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+
+        assertThrows(ItemNotFoundException.class, () -> itemService.addComment(1,14,commentDto));
+
     }
 }
