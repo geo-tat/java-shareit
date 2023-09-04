@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestFullDto;
@@ -16,6 +17,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping(path = "/requests")
 @AllArgsConstructor
+@Validated
 public class ItemRequestController {
 
     private final ItemRequestService service;
@@ -32,9 +34,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    Collection<ItemRequestFullDto> getAllRequests(@PositiveOrZero
+    Collection<ItemRequestFullDto> getAllRequests(@PositiveOrZero(message = "Ошибка параметра 'from'!")
                                                   @RequestParam(name = "from", defaultValue = "0") int from,
-                                                  @Positive
+                                                  @Positive(message = "Ошибка параметра 'size'!")
                                                   @RequestParam(name = "size", defaultValue = "10") int size,
                                                   @RequestHeader("X-Sharer-User-Id") int userId) {
         PageRequest pageRequest = PageRequest.of(from, size, Sort.by("created").descending());

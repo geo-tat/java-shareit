@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.security.InvalidParameterException;
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +100,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidParameterException(final InvalidParameterException e) {
+    public ErrorResponse handleInvalidParameterException(final ConstraintViolationException e) {
         log.error("Ошибка при вводе параметра.", e);
         return new ErrorResponse(e.getMessage());
     }

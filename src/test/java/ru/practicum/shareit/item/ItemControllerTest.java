@@ -173,7 +173,7 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Ошибка параметра 'from'!"));
+                .andExpect(jsonPath("$.error").value("getItems.from: Ошибка параметра 'from'!"));
     }
 
     @Test

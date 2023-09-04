@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingLightDto;
@@ -12,13 +13,13 @@ import ru.practicum.shareit.booking.service.BookingService;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.security.InvalidParameterException;
 import java.util.Collection;
 
 
 @RestController
 @RequestMapping(path = "/bookings")
 @AllArgsConstructor
+@Validated
 public class BookingController {
     private final BookingService service;
 
@@ -43,27 +44,23 @@ public class BookingController {
     @GetMapping
     public Collection<BookingDto> getAllByUser(@RequestHeader("X-Sharer-User-Id") int userId,
                                                @RequestParam(name = "state", defaultValue = "ALL") String state,
-                                               @PositiveOrZero
+                                               @PositiveOrZero(message = "Ошибка параметра 'from'!")
                                                @RequestParam(name = "from", defaultValue = "0") int from,
-                                               @Positive
+                                               @Positive(message = "Ошибка параметра 'size'!")
                                                @RequestParam(name = "size", defaultValue = "10") int size) {
-        if (from < 0) {
-            throw new InvalidParameterException("Ошибка параметра 'from'!");
-        }
+
         PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
         return service.getAllByUser(userId, state, pageRequest);
     }
 
     @GetMapping("/owner")
+    @Validated
     public Collection<BookingDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                                 @RequestParam(name = "state", defaultValue = "ALL") String state,
-                                                @PositiveOrZero
+                                                @PositiveOrZero(message = "Ошибка параметра 'from'!")
                                                 @RequestParam(name = "from", defaultValue = "0") int from,
-                                                @Positive
+                                                @Positive(message = "Ошибка параметра 'size'!")
                                                 @RequestParam(name = "size", defaultValue = "10") int size) {
-        if (from < 0) {
-            throw new InvalidParameterException("Ошибка параметра 'from'!");
-        }
         PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
         return service.getAllByOwner(userId, state, pageRequest);
     }

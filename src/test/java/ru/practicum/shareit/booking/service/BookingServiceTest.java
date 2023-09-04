@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingLightDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -289,7 +288,7 @@ public class BookingServiceTest {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user3));
 
-        when(bookingRepository.findAllBookingsByBookerId(anyInt(), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
+        when(bookingRepository.findAllBookingsByBookerId(anyInt(), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
         String state = "ALL";
 
         List<BookingDto> test = new ArrayList<>(bookingService.getAllByUser(user3.getId(), state, pageRequest));
@@ -298,7 +297,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllBookingsByBookerIdAndStartBeforeAndEndAfter(anyInt(), any(LocalDateTime.class), any(LocalDateTime.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
+        when(bookingRepository.findAllBookingsByBookerIdAndStartBeforeAndEndAfter(anyInt(), any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
         state = "CURRENT";
 
         test = new ArrayList<>(bookingService.getAllByUser(user3.getId(), state, pageRequest));
@@ -307,7 +306,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllBookingsByBookerIdAndEndBefore(anyInt(), any(LocalDateTime.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
+        when(bookingRepository.findAllBookingsByBookerIdAndEndBefore(anyInt(), any(LocalDateTime.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
         state = "PAST";
 
         test = new ArrayList<>(bookingService.getAllByUser(user3.getId(), state, pageRequest));
@@ -316,7 +315,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllBookingsByBookerIdAndStartAfter(anyInt(), any(LocalDateTime.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
+        when(bookingRepository.findAllBookingsByBookerIdAndStartAfter(anyInt(), any(LocalDateTime.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
         state = "FUTURE";
 
         test = new ArrayList<>(bookingService.getAllByUser(user3.getId(), state, pageRequest));
@@ -326,7 +325,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
         ;
 
-        when(bookingRepository.findAllByBookerIdAndStatusEquals(anyInt(), any(Status.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
+        when(bookingRepository.findAllByBookerIdAndStatusEquals(anyInt(), any(Status.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
         state = "WAITING";
 
         test = new ArrayList<>(bookingService.getAllByUser(user3.getId(), state, pageRequest));
@@ -335,7 +334,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllByBookerIdAndStatusEquals(anyInt(), any(Status.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
+        when(bookingRepository.findAllByBookerIdAndStatusEquals(anyInt(), any(Status.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1, booking2)));
         state = "REJECTED";
 
         test = new ArrayList<>(bookingService.getAllByUser(user3.getId(), state, pageRequest));
@@ -350,7 +349,7 @@ public class BookingServiceTest {
     void getAllByOwnerTest() {
         when(userRepository.existsById(anyInt())).thenReturn(true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
-        when(bookingRepository.findAllByItemOwner(any(User.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
+        when(bookingRepository.findAllByItemOwner(any(User.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
 
         String state = "ALL";
 
@@ -360,7 +359,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
+        when(bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
         state = "CURRENT";
 
         test = new ArrayList<>(bookingService.getAllByOwner(user.getId(), state, pageRequest));
@@ -369,7 +368,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllByItemOwnerAndEndBefore(any(User.class), any(LocalDateTime.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
+        when(bookingRepository.findAllByItemOwnerAndEndBefore(any(User.class), any(LocalDateTime.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
         state = "PAST";
 
         test = new ArrayList<>(bookingService.getAllByOwner(user.getId(), state, pageRequest));
@@ -378,7 +377,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllByItemOwnerAndStartAfter(any(User.class), any(LocalDateTime.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
+        when(bookingRepository.findAllByItemOwnerAndStartAfter(any(User.class), any(LocalDateTime.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
         state = "FUTURE";
 
         test = new ArrayList<>(bookingService.getAllByOwner(user.getId(), state, pageRequest));
@@ -387,7 +386,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllByItemOwnerAndStatusEquals(any(User.class), any(Status.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
+        when(bookingRepository.findAllByItemOwnerAndStatusEquals(any(User.class), any(Status.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
         state = "WAITING";
 
         test = new ArrayList<>(bookingService.getAllByOwner(user.getId(), state, pageRequest));
@@ -396,7 +395,7 @@ public class BookingServiceTest {
         assertEquals(test.get(0).getStatus(), booking1.getStatus());
         assertEquals(test.get(0).getBooker(), UserMapper.toUserBooker(user3));
 
-        when(bookingRepository.findAllByItemOwnerAndStatusEquals(any(User.class), any(Status.class), any(Sort.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
+        when(bookingRepository.findAllByItemOwnerAndStatusEquals(any(User.class), any(Status.class), any(PageRequest.class))).thenReturn(new ArrayList<>(List.of(booking1)));
         state = "REJECTED";
 
         test = new ArrayList<>(bookingService.getAllByOwner(user.getId(), state, pageRequest));

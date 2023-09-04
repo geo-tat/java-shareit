@@ -13,9 +13,5 @@ import java.util.Collection;
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Integer> {
     Collection<ItemRequest> findAllByRequesterId(int ownerId, Sort sort);
 
-    //   Page<ItemRequest> findAllByUserIdNot(int userId, PageRequest pageRequest);
-
-    //  Page<ItemRequest> findAllByRequesterIdNot(int userId, PageRequest pageRequest);
-
     Collection<ItemRequest> findAllByRequesterNot(User user, PageRequest pageRequest);
 }

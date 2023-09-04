@@ -79,7 +79,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return request;
     }
 
-    private static Collection<ItemRequestFullDto> getRequestsUtil(Collection<ItemRequest> requests, ItemRepository itemRepository) {
+    private static Collection<ItemRequestFullDto> getRequestsUtil(Collection<ItemRequest> requests,
+                                                                  ItemRepository itemRepository) {
         Collection<Integer> requestIds = requests.stream()
                 .map(ItemRequest::getId)
                 .collect(Collectors.toList());
@@ -92,12 +93,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Collection<ItemRequestFullDto> result = requests.stream()
                 .map(RequestMapper::toDtoFull).collect(Collectors.toList());
         for (ItemRequestFullDto itemRequestFullDto : result) {
-
-            if (itemMap.containsKey(itemRequestFullDto.getId())) {
-                itemRequestFullDto.setItems(itemMap.get(itemRequestFullDto.getId()));
-            } else {
-                itemRequestFullDto.setItems(new ArrayList<>());
-            }
+            itemRequestFullDto.setItems(itemMap.getOrDefault(itemRequestFullDto.getId(), new ArrayList<>()));
         }
         return result;
     }

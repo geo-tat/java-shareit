@@ -7,7 +7,6 @@ import ru.practicum.shareit.request.dto.ItemRequestFullDto;
 public class RequestMapper {
     public static ItemRequest toRequest(ItemRequestDto itemRequestDto) {
         return ItemRequest.builder()
-                .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())
                 .build();
     }
