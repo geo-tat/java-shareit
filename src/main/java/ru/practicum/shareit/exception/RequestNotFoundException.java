@@ -3,11 +3,10 @@ package ru.practicum.shareit.exception;
 import lombok.Getter;
 
 @Getter
-public class InvalidEmailException extends RuntimeException {
+public class RequestNotFoundException extends RuntimeException {
     String message;
 
-    public InvalidEmailException(String message) {
+    public RequestNotFoundException(String message) {
         this.message = message;
     }
-
 }

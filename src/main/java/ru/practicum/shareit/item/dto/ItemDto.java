@@ -14,12 +14,13 @@ import java.util.List;
 public class ItemDto {
     int id;
     @NotBlank
-    String name;
+   private String name;
     @NotBlank
-    String description;
+   private String description;
     @NotNull
-    Boolean available;
-    BookingLightDto lastBooking;
-    BookingLightDto nextBooking;
-    List<CommentDto> comments;
+   private Boolean available;
+   private Integer requestId;
+   private BookingLightDto lastBooking;
+   private BookingLightDto nextBooking;
+   private List<CommentDto> comments;
 }

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,31 +18,31 @@ import java.util.Collection;
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
 
-    Collection<Booking> findAllBookingsByBookerId(int userId, Sort sort);
+    Collection<Booking> findAllBookingsByBookerId(int userId, PageRequest pageRequest);
 
     Collection<Booking> findAllBookingsByBookerIdAndStartBeforeAndEndAfter(int userId,
                                                                            LocalDateTime start,
                                                                            LocalDateTime end,
-                                                                           Sort sort);
+                                                                           PageRequest pageRequest);
 
-    Collection<Booking> findAllBookingsByBookerIdAndEndBefore(int userId, LocalDateTime now, Sort sort);
+    Collection<Booking> findAllBookingsByBookerIdAndEndBefore(int userId, LocalDateTime now, PageRequest pageRequest);
 
-    Collection<Booking> findAllBookingsByBookerIdAndStartAfter(int userId, LocalDateTime now, Sort sort);
+    Collection<Booking> findAllBookingsByBookerIdAndStartAfter(int userId, LocalDateTime now, PageRequest pageRequest);
 
-    Collection<Booking> findAllByItemOwner(User user, Sort sort);
+    Collection<Booking> findAllByItemOwner(User user, PageRequest pageRequest);
 
     Collection<Booking> findAllByItemOwnerAndStartBeforeAndEndAfter(User user,
                                                                     LocalDateTime now,
                                                                     LocalDateTime now1,
-                                                                    Sort sort);
+                                                                    PageRequest pageRequest);
 
-    Collection<Booking> findAllByItemOwnerAndEndBefore(User user, LocalDateTime now, Sort sort);
+    Collection<Booking> findAllByItemOwnerAndEndBefore(User user, LocalDateTime now, PageRequest pageRequest);
 
-    Collection<Booking> findAllByItemOwnerAndStartAfter(User user, LocalDateTime now, Sort sort);
+    Collection<Booking> findAllByItemOwnerAndStartAfter(User user, LocalDateTime now, PageRequest pageRequest);
 
-    Collection<Booking> findAllByItemOwnerAndStatusEquals(User user, Status status, Sort sort);
+    Collection<Booking> findAllByItemOwnerAndStatusEquals(User user, Status status, PageRequest pageRequest);
 
-    Collection<Booking> findAllByBookerIdAndStatusEquals(int userId, Status status, Sort sort);
+    Collection<Booking> findAllByBookerIdAndStatusEquals(int userId, Status status, PageRequest pageRequest);
 
 
     Collection<Booking> findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(int userId,

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -35,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepo;
     private final BookingRepository bookingRepo;
     private final CommentRepository commentRepo;
+    private final ItemRequestRepository requestRepository;
     private final Sort sortStart = Sort.by(Sort.Direction.ASC, "start");
     private final Sort sortEnd = Sort.by(Sort.Direction.DESC, "end");
 
@@ -45,6 +48,9 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepo.findById(userId).stream()
                 .findAny()
                 .orElseThrow(() -> new UserNotFoundException("Пользователь c ID=" + userId + " не найден"));
+        if (itemDto.getRequestId() != null) {
+            item.setRequest(requestRepository.getReferenceById(itemDto.getRequestId()));
+        }
         item.setOwner(user);
         return ItemMapper.toItemDto(repository.save(item));
     }
@@ -76,8 +82,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<ItemDto> getItems(int userId) {
-        Collection<ItemDto> result = repository.findAllItemsByOwnerId(userId)
+    public Collection<ItemDto> getItems(int userId, PageRequest pageRequest) {
+        Collection<ItemDto> result = repository.findAllItemsByOwnerId(userId, pageRequest)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -162,11 +168,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> search(String text) {
+    public Collection<ItemDto> search(String text, PageRequest pageRequest) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-        return repository.search(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return repository.search(text, pageRequest).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
