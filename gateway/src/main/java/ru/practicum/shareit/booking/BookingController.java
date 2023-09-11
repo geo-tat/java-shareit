@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.exception.WrongStateException;
+import ru.practicum.shareit.exception.WrongTimeException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -26,6 +27,9 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> addBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                              @RequestBody @Valid BookItemRequestDto requestDto) {
+        if (!requestDto.getStart().isBefore(requestDto.getEnd())) {
+            throw new WrongTimeException("Время течет в другую сторону.");
+        }
         log.info("Creating booking {}, userId={}", requestDto, userId);
         return bookingClient.addBooking(userId, requestDto);
     }

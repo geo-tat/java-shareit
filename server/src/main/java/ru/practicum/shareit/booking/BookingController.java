@@ -42,9 +42,7 @@ public class BookingController {
     @GetMapping
     public Collection<BookingDto> getAllByUser(@RequestHeader("X-Sharer-User-Id") int userId,
                                                @RequestParam(name = "state", defaultValue = "ALL") String state,
-                                               //     @PositiveOrZero(message = "Ошибка параметра 'from'!")
                                                @RequestParam(name = "from", defaultValue = "0") int from,
-                                            //   @Positive(message = "Ошибка параметра 'size'!")
                                                @RequestParam(name = "size", defaultValue = "10") int size) {
 
         PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
@@ -55,9 +53,7 @@ public class BookingController {
     @Validated
     public Collection<BookingDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                                 @RequestParam(name = "state", defaultValue = "ALL") String state,
-                                              //  @PositiveOrZero(message = "Ошибка параметра 'from'!")
                                                 @RequestParam(name = "from", defaultValue = "0") int from,
-                                              //  @Positive(message = "Ошибка параметра 'size'!")
                                                 @RequestParam(name = "size", defaultValue = "10") int size) {
         PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
         return service.getAllByOwner(userId, state, pageRequest);

@@ -44,9 +44,6 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable() || !alreadyBooked.isEmpty()) {
             throw new AvailableException("Предмет недоступен для аренды");
         }
-        if (!booking.getStart().isBefore(booking.getEnd())) {
-            throw new WrongTimeException("Время течет в другую сторону.");
-        }
         if (item.getOwner().getId() == userId) {
             throw new ItemNotFoundException("Вы не можете забронировать свой предмет.");
         }

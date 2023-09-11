@@ -44,4 +44,18 @@ public class ErrorHandler {
         log.error("Unknown state: UNSUPPORTED_STATUS", e);
         return new ErrorResponse(e.getError());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleWrongTimeException(final WrongTimeException e) {
+        log.error("Ошибка с настройками дат.", e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handle(Throwable e) {
+        log.warn("Ошибка связи с сервером", e);
+        return new ErrorResponse(e.getMessage());
+    }
 }

@@ -187,7 +187,7 @@ public class BookingServiceTest {
 
         assertThrows(AvailableException.class, () -> bookingService.add(bookingLight1, anyInt()));
     }
-
+    /*
     @Test
     void createBookingNotValidEnd() {
         when(itemRepository.existsById(anyInt())).thenReturn(true);
@@ -199,7 +199,7 @@ public class BookingServiceTest {
 
         assertThrows(WrongTimeException.class, () -> bookingService.add(bookingLight1, user2.getId()));
     }
-
+*/
 
     @Test
     void updateBookingTest() {
