@@ -10,6 +10,8 @@ An online platform for renting(sharing) items.
 - Maven
 - Junit
 - PostgreSQL
+- REST
+- Docker
 
 ### Functions:
 - Creating new users, updating data.
