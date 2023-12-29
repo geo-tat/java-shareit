@@ -22,3 +22,7 @@ An online platform for renting(sharing) items.
 - Retrieval of a list of all bookings for items owned by the user.
 - Retrieval of a user's list of all items.
 - Posting reviews for items.
+
+- ## Main Service Database Structure:
+
+![shareIt](shareIt-er-diagram.png)
